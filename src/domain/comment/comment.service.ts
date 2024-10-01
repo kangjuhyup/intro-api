@@ -1,9 +1,16 @@
-import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  forwardRef,
+  Inject,
+  Injectable,
+  Logger,
+} from '@nestjs/common';
 import { AddCommentRequest } from './dto/request/add.comment.request';
 import { MailService } from '../../domain/mail/mail.service';
 import { GetCommentsRequest } from './dto/request/get.comments.request';
 import { GetCommentsResponse } from './dto/response/get.comments.response';
 import { ConfigService } from '@nestjs/config';
+import { CommentRepository } from 'src/database/repository/comment.repository';
 
 @Injectable()
 export class CommentService {
@@ -11,6 +18,7 @@ export class CommentService {
   private unVeiriedComments = new Map<
     string,
     {
+      historyId: number;
       avartar: string;
       name: string;
       body: string;
@@ -38,20 +46,28 @@ export class CommentService {
   constructor(
     @Inject(forwardRef(() => MailService))
     private readonly mail: MailService,
+    private readonly commentRepisotry: CommentRepository,
   ) {}
 
-  getComments({ limit, skip }: GetCommentsRequest): GetCommentsResponse {
-    const slicedComments =
-      skip < this.comments.length
-        ? this.comments.slice(skip, skip + limit)
-        : [];
-    this.logger.debug(`getComments => ${JSON.stringify(slicedComments)}`);
+  async getComments({
+    limit,
+    skip,
+  }: GetCommentsRequest): Promise<GetCommentsResponse> {
     return {
-      count: this.comments.length,
-      comments: slicedComments,
+      count: await this.commentRepisotry.selectCommentCount(),
+      comments: (
+        await this.commentRepisotry.selectCommentMany(limit, skip)
+      ).map((comment) => ({
+        avartar: comment.file.path,
+        name: comment.user.name,
+        company: comment.user.company,
+        body: comment.comment,
+        createdAt: comment.createdAt,
+      })),
     };
   }
 
+  //TODO : Redis 로 저장소 변경 필요
   async addComment({
     email,
     name,
@@ -60,9 +76,10 @@ export class CommentService {
   }: AddCommentRequest): Promise<boolean> {
     if (this.unVeiriedComments.has(email)) return false;
 
-    await this.mail.send({ to: email });
+    const { historyId } = await this.mail.send({ to: email });
 
     this.unVeiriedComments.set(email, {
+      historyId,
       name,
       avartar,
       body: comment,
@@ -70,11 +87,14 @@ export class CommentService {
     return true;
   }
 
-  confirmComment(email: string): boolean {
+  confirmComment(email: string, historyId: number): boolean {
     this.logger.debug(`confirmComment email => ${email}`);
     if (!this.unVeiriedComments.has(email)) return false;
+    const comment = this.unVeiriedComments.get(email);
+    if (comment.historyId !== historyId)
+      throw new BadRequestException('만료된 이메일 인증입니다.');
     this.comments.push({
-      ...this.unVeiriedComments.get(email),
+      ...comment,
       company: 'test',
       createdAt: new Date(),
     });
