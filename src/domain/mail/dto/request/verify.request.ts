@@ -1,6 +1,8 @@
-import { IsEmail } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { IsNumber } from 'class-validator';
 
 export class VerifyMailRequest {
-  @IsEmail()
-  email: string;
+  @Transform(({ value }) => Number(value))
+  @IsNumber()
+  historyId: number;
 }

@@ -1,8 +1,16 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { YN } from '../../common/enum';
 import { UserEntity } from './user.entity';
 import { EmailHistoryColumn } from './column/email.history.column';
+import { CommentEntity } from './comment.entity';
 
 @Entity({ name: EmailHistoryColumn.table })
 export class EmailHistoryEntity extends BaseEntity {
@@ -16,5 +24,10 @@ export class EmailHistoryEntity extends BaseEntity {
   verifyYn: YN;
 
   @ManyToOne(() => UserEntity)
+  @JoinColumn({ name: EmailHistoryColumn.address })
   user: UserEntity;
+
+  @OneToOne(() => CommentEntity, { nullable: true })
+  @JoinColumn({ name: EmailHistoryColumn.historyId })
+  comment?: CommentEntity;
 }

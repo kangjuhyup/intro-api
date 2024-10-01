@@ -2,6 +2,10 @@ import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm';
 import { UserEntity } from './user.entity';
 import { BaseEntity } from './base.entity';
 import { CommentColumn } from './column/comment.column';
+import { EmailHistoryColumn } from './column/email.history.column';
+import { EmailHistoryEntity } from './email.history.entity';
+import { FileColumn } from './column/file.column';
+import { FileEntity } from './file.entity';
 
 @Entity({ name: CommentColumn.table })
 export class CommentEntity extends BaseEntity {
@@ -11,7 +15,21 @@ export class CommentEntity extends BaseEntity {
   @Column({ name: CommentColumn.comment })
   comment: string;
 
+  @Column({ name: EmailHistoryColumn.historyId })
+  emailHistoryId: number;
+
+  @Column({ name: FileColumn.fileId })
+  fileId: number;
+
   @OneToOne(() => UserEntity)
-  @JoinColumn()
+  @JoinColumn({ name: CommentColumn.address })
   user: UserEntity;
+
+  @OneToOne(() => EmailHistoryEntity)
+  @JoinColumn({ name: EmailHistoryColumn.historyId })
+  emailHistory: EmailHistoryEntity;
+
+  @OneToOne(() => FileEntity)
+  @JoinColumn({ name: FileColumn.fileId })
+  file: FileEntity;
 }
