@@ -1,0 +1,20 @@
+version: '3.8'  # Docker Compose 버전
+
+services:
+  mariadb:
+    image: mariadb:latest
+    container_name: my-mariadb
+    env_file: 
+      - .env.db
+    environment:
+      - TZ=Asia/Seoul
+    ports:
+      - "3306:3306"
+    volumes:
+      - /Users/kangjuhyup/Documents/intro-api/db:/var/lib/mysql  # 로컬 볼륨과 컨테이너의 /var/lib/mysql 디렉토리 연결
+    networks:
+      - jhkang-network 
+
+networks:
+  jhkang-network:
+    driver: bridge

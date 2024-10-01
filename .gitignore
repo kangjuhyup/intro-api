@@ -6,3 +6,7 @@
 !.yarn/sdks
 !.yarn/versions
 dist
+
+.env
+.env.db
+db
