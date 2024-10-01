@@ -24,7 +24,16 @@ export class CommentService {
     company: string;
     body: string;
     createdAt: Date;
-  }[] = [];
+  }[] = [
+    {
+      avartar:
+        'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-2.png',
+      name: '강주협',
+      company: '더즌(주)',
+      body: '반가워요',
+      createdAt: new Date(),
+    },
+  ];
 
   constructor(
     @Inject(forwardRef(() => MailService))
@@ -36,6 +45,7 @@ export class CommentService {
       skip < this.comments.length
         ? this.comments.slice(skip, skip + limit)
         : [];
+    this.logger.debug(`getComments => ${JSON.stringify(slicedComments)}`);
     return {
       count: this.comments.length,
       comments: slicedComments,
