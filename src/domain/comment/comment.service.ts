@@ -1,11 +1,13 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import { AddCommentRequest } from './dto/request/add.comment.request';
 import { MailService } from '../../domain/mail/mail.service';
 import { GetCommentsRequest } from './dto/request/get.comments.request';
 import { GetCommentsResponse } from './dto/response/get.comments.response';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class CommentService {
+  private logger = new Logger(ConfigService.name);
   private unVeiriedComments = new Map<
     string,
     {
@@ -59,12 +61,14 @@ export class CommentService {
   }
 
   confirmComment(email: string): boolean {
+    this.logger.debug(`confirmComment email => ${email}`);
     if (!this.unVeiriedComments.has(email)) return false;
     this.comments.push({
       ...this.unVeiriedComments.get(email),
       company: 'test',
       createdAt: new Date(),
     });
+    this.logger.debug(`push comments`);
     this.unVeiriedComments.delete(email);
     return true;
   }

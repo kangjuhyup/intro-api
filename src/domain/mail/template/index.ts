@@ -1,4 +1,4 @@
-export const verifyTemplate = (url: string, email: string) => ` <!DOCTYPE html>
+export const verifyTemplate = (url: string, email: string) => `<!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
@@ -61,38 +61,12 @@ export const verifyTemplate = (url: string, email: string) => ` <!DOCTYPE html>
   <div class="container">
     <h1>소중한 댓글 감사합니다.</h1>
     <p>인증을 위해 아래의 확인 버튼을 눌러주세요.</p>
-    <a href="#" class="button" id="verify-button">인증</a>
+    <a href="${url}?email=${encodeURIComponent(email)}" class="button">인증</a>
 
     <div class="footer">
-      <p>본 이메일은 자동으로 발송된 메일입니다. 문의사항은 010-4348-5571 로 연락주세요.</p>
+      <p>본 이메일은 자동으로 발송된 메일입니다. 문의사항은 010-4348-5571로 연락주세요.</p>
     </div>
   </div>
-
-  <script>
-    document.getElementById('verify-button').addEventListener('click', function (event) {
-      event.preventDefault();
-
-      // 요청을 보내는 로직 (여기서는 fetch를 예시로 사용)
-      fetch('${url}', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email: ${email} }),
-      })
-        .then((response) => {
-          if (response.ok) {
-            alert('인증이 완료되었습니다.');
-          } else {
-            alert('인증에 실패했습니다. 다시 시도해주세요.');
-          }
-        })
-        .catch((error) => {
-          console.error('인증 요청 중 오류 발생:', error);
-          alert('오류가 발생했습니다. 다시 시도해주세요.');
-        });
-    });
-  </script>
 </body>
 </html>
 `;
