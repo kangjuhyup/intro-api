@@ -1,6 +1,8 @@
-FROM node:18-alpine AS builder
+FROM node:20 AS builder
 
 WORKDIR /usr/src/app
+
+RUN yarn set version 4.5.0
 
 COPY .yarn/ .yarn/
 COPY .yarnrc.yml .yarnrc.yml
@@ -12,9 +14,11 @@ COPY . .
 
 RUN yarn build
 
-FROM node:18-alpine AS production
+FROM node:20-alpine AS production
 
 WORKDIR /usr/src/app
+
+RUN yarn set version 4.5.0
 
 COPY --from=builder /usr/src/app/.yarn/ .yarn/
 COPY --from=builder /usr/src/app/.yarnrc.yml .yarnrc.yml
