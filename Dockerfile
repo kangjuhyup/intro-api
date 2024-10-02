@@ -1,17 +1,9 @@
 FROM node:20 AS builder
 
 WORKDIR /usr/src/app
-
-RUN yarn set version 4.5.0
-
-COPY .yarn/ .yarn/
-COPY .yarnrc.yml .yarnrc.yml
-COPY package.json yarn.lock ./
-
-RUN yarn install
-
 COPY . .
-
+RUN yarn set version 4.5.0
+RUN yarn install
 RUN yarn build
 
 FROM node:20-alpine AS production
