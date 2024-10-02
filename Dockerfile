@@ -8,7 +8,7 @@ COPY .yarn/ .yarn/
 COPY .yarnrc.yml .yarnrc.yml
 COPY package.json yarn.lock ./
 
-RUN yarn install --immutable
+RUN yarn install
 
 COPY . .
 
