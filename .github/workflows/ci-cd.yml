@@ -7,7 +7,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    enviroments: CI/CD
+    environment: CI/CD
     permissions:
       contents: read
       packages: write
