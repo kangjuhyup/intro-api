@@ -58,7 +58,7 @@ jobs:
         echo "$SSH_PRIVATE_KEY" > private_key
         chmod 600 private_key
         
-        ssh -o StrictHostKeyChecking=no -i private_key opc@$ORACLE_IP << 'EOF'
+        ssh -o StrictHostKeyChecking=no -i private_key ubuntu@$ORACLE_IP << 'EOF'
           docker login ghcr.io -u $GITHUB_ACTOR -p $GITHUB_TOKEN
           docker pull ghcr.io/${{ github.repository }}/jhkang-intro-api:latest
           docker stop jhkang-intro-api || true
