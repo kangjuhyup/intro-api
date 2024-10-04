@@ -36,16 +36,16 @@ jobs:
     
     - name : create .env
       run: |
-        echo "NODE_ENV=${{ env.NODE_ENV }}" >> .env
-        echo "PORT=${{ env.PORT }}" >> .env
-        echo "DB_TYPE=${{ env.DB_TYPE }}" >> .env
-        echo "DB_NAME=${{ env.DB_NAME }}" >> .env
-        echo "DB_HOST=${{ env.DB_HOST }}" >> .env
-        echo "DB_PORT=${{ env.DB_PORT }}" >> .env
+        echo "NODE_ENV=${{ vars.NODE_ENV }}" >> .env
+        echo "PORT=${{ vars.PORT }}" >> .env
+        echo "DB_TYPE=${{ vars.DB_TYPE }}" >> .env
+        echo "DB_NAME=${{ vars.DB_NAME }}" >> .env
+        echo "DB_HOST=${{ vars.DB_HOST }}" >> .env
+        echo "DB_PORT=${{ vars.DB_PORT }}" >> .env
         echo "DB_USER=${{ secrets.DB_USER }}" >> .env
         echo "DB_PWD=${{ secrets.DB_PWD }}" >> .env
         echo "GMAIL_ACCOUNT=${{ secrets.GMAIL_ACCOUNT }}" >> .env
-        echo "VERIFY_URL=${{ env.VERIFY_URL }}" >> .env
+        echo "VERIFY_URL=${{ vars.VERIFY_URL }}" >> .env
         echo "GMAIL_PASSWORD=${{ secrets.GMAIL_PASSWORD }}" >> .env
 
     - name: docker create
