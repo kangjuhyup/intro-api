@@ -17,6 +17,7 @@ COPY --from=builder /usr/src/app/.yarnrc.yml .yarnrc.yml
 COPY --from=builder /usr/src/app/package.json /usr/src/app/yarn.lock ./
 COPY --from=builder /usr/src/app/.pnp.cjs .pnp.cjs
 COPY --from=builder /usr/src/app/.pnp.loader.mjs .pnp.loader.mjs
+COPY --from=builder /usr/src/app/.env .env
 
 COPY --from=builder /usr/src/app/dist ./dist
 
