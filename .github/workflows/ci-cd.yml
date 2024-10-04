@@ -33,11 +33,12 @@ jobs:
     - name: install packages
       run: yarn install --immutable
 
-    - name: build docker
-      run: docker build -t ghcr.io/${{ github.repository }}/jhkang-intro-api:latest .
+    - name: docker create
+      run : docker buildx create --use
 
-    - name: push image
-      run: docker push ghcr.io/${{ github.repository }}/jhkang-intro-api:latest
+    - name: docker build & push
+      run: docker buildx build --platform linux/amd64,linux/arm64 -t ghcr.io/${{ github.repository }}/jhkang-intro-api:latest --push .
+    
       
   deploy:
     runs-on: ubuntu-latest
