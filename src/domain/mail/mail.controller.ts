@@ -9,8 +9,10 @@ export class MailController {
   constructor(private readonly mailService: MailService) {}
 
   @Get('verify')
-  verify(@Query() dto: VerifyMailRequest): HttpResponse<VerifyMailResponse> {
-    const data = this.mailService.verify(dto);
+  async verify(
+    @Query() dto: VerifyMailRequest,
+  ): Promise<HttpResponse<VerifyMailResponse>> {
+    const data = await this.mailService.verify(dto);
     return {
       result: true,
       data,

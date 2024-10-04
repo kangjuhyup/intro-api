@@ -9,6 +9,7 @@ import { UserRepository } from './repository/user.repository';
 import { EmailHistoryRepsitory } from './repository/email.history.repository';
 import { CommentRepository } from './repository/comment.repository';
 import { FileRepository } from './repository/file.repository';
+import { FileEntity } from './entity/file.entity';
 
 const repository = [
   UserRepository,
@@ -28,7 +29,12 @@ const repository = [
       },
       inject: [ConfigService],
     }),
-    TypeOrmModule.forFeature([UserEntity, CommentEntity, EmailHistoryEntity]),
+    TypeOrmModule.forFeature([
+      UserEntity,
+      CommentEntity,
+      EmailHistoryEntity,
+      FileEntity,
+    ]),
   ],
   providers: [...repository],
   exports: [...repository],

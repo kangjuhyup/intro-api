@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from '../entity/user.entity';
 import { InsertResult, Repository } from 'typeorm';
+import { YN } from '../../common/enum';
 
 @Injectable()
 export class UserRepository {
@@ -14,6 +15,14 @@ export class UserRepository {
       address,
       name,
       company,
+    });
+  }
+
+  async selectUserMany(): Promise<UserEntity[]> {
+    return await this.user.find({
+      where: {
+        useYn: YN.Y,
+      },
     });
   }
 

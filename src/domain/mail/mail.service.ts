@@ -39,9 +39,12 @@ export class MailService {
     return { historyId: history.historyId, sendedAt: new Date() };
   }
 
-  async verify({ historyId }: VerifyMailRequest): Promise<VerifyMailResponse> {
+  async verify({
+    email,
+    historyId,
+  }: VerifyMailRequest): Promise<VerifyMailResponse> {
     await this.emailHistoryRepository.updateEmailHistoryVerify(historyId);
-    const result = this.comment.confirmComment(historyId);
+    const result = this.comment.confirmComment(email, historyId);
     this.logger.debug(`verify result => ${result}`);
     return { verify: result };
   }

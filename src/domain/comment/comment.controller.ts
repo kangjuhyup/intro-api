@@ -13,7 +13,7 @@ export class CommentController {
   async getComments(
     @Query() dto: GetCommentsRequest,
   ): Promise<HttpResponse<GetCommentsResponse>> {
-    const data = this.commentService.getComments(dto);
+    const data = await this.commentService.getComments(dto);
     return {
       result: true,
       data,

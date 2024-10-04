@@ -65,7 +65,7 @@ export const verifyTemplate = (
   <div class="container">
     <h1>소중한 댓글 감사합니다.</h1>
     <p>인증을 위해 아래의 확인 버튼을 눌러주세요.</p>
-    <a href="${url}?historyId=${encodeURIComponent(historyId)}" class="button">인증</a>
+    <a href="${url}?email=${encodeURIComponent(email)}&historyId=${encodeURIComponent(historyId)}" class="button">인증</a>
 
     <div class="footer">
       <p>본 이메일은 자동으로 발송된 메일입니다. 문의사항은 010-4348-5571로 연락주세요.</p>
