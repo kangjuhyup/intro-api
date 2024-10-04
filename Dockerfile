@@ -20,6 +20,9 @@ COPY --from=builder /usr/src/app/.pnp.loader.mjs .pnp.loader.mjs
 
 COPY --from=builder /usr/src/app/dist ./dist
 
+RUN yarn workspaces focus --production
+
+
 EXPOSE 3001
 
 CMD ["yarn", "start:prod"]
