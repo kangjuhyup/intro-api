@@ -52,7 +52,7 @@ jobs:
       run : docker buildx create --use
 
     - name: docker build & push
-      run: docker buildx build --platform linux/amd64,linux/arm64 -t ghcr.io/${{ github.repository }}/jhkang-intro-api:latest --push .
+      run: docker buildx build --platform linux/amd64,linux/arm64 -t ghcr.io/${{ github.repository }}/service:latest --push .
     
       
   deploy:
@@ -76,8 +76,8 @@ jobs:
         
         ssh -o StrictHostKeyChecking=no -i private_key ubuntu@$ORACLE_IP << 'EOF'
           docker login ghcr.io -u $GITHUB_ACTOR -p $GITHUB_TOKEN
-          docker pull ghcr.io/${{ github.repository }}/jhkang-intro-api:latest
+          docker pull ghcr.io/${{ github.repository }}/service:latest
           docker stop jhkang-intro-api || true
           docker rm jhkang-intro-api || true
-          docker run -d -p 3001:3001 --name jhkang-intro-api ghcr.io/${{ github.repository }}/jhkang-intro-api:latest
+          docker run -d -p 3001:3001 --name jhkang-intro-api ghcr.io/${{ github.repository }}/service:latest
         EOF
