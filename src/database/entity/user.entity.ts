@@ -10,16 +10,17 @@ import { EmailHistoryEntity } from './email.history.entity';
 import { CommentEntity } from './comment.entity';
 import { UserColumn } from './column/user.column';
 import { BaseEntity } from './base.entity';
+import { UserColumn } from './column/user.column';
 
-@Entity()
+@Entity({ name : UserColumn.table })
 export class UserEntity extends BaseEntity {
-  @PrimaryColumn()
+  @PrimaryColumn({ name : UserColumn.address })
   address: string;
 
-  @Column()
+  @Column({ name : UserColumn.name })
   name: string;
 
-  @Column({ nullable: true })
+  @Column({ name : UserColumn.company, nullable: true })
   company?: string;
 
   @OneToMany(() => EmailHistoryEntity, (emailHistory) => emailHistory.user, {
