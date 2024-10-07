@@ -10,7 +10,6 @@ import { EmailHistoryEntity } from './email.history.entity';
 import { CommentEntity } from './comment.entity';
 import { UserColumn } from './column/user.column';
 import { BaseEntity } from './base.entity';
-import { UserColumn } from './column/user.column';
 
 @Entity({ name : UserColumn.table })
 export class UserEntity extends BaseEntity {
