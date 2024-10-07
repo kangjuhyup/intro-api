@@ -40,8 +40,8 @@ jobs:
         echo "PORT=${{ vars.PORT }}" >> .env
         echo "DB_TYPE=${{ vars.DB_TYPE }}" >> .env
         echo "DB_NAME=${{ vars.DB_NAME }}" >> .env
-        echo "DB_HOST=${{ vars.DB_HOST }}" >> .env
-        echo "DB_PORT=${{ vars.DB_PORT }}" >> .env
+        echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
+        echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
         echo "DB_USER=${{ secrets.DB_USER }}" >> .env
         echo "DB_PWD=${{ secrets.DB_PWD }}" >> .env
         echo "GMAIL_ACCOUNT=${{ secrets.GMAIL_ACCOUNT }}" >> .env
