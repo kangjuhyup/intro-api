@@ -1,6 +1,9 @@
 import { DataSource } from 'typeorm';
 import 'dotenv/config';
 
+console.log(process.env.DB_USE)
+console.log(process.env.DB_PWD)
+
 export const IntroDataSource = new DataSource({
   type: process.env.DB_TYPE as any,
   host: process.env.DB_HOST,
