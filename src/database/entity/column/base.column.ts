@@ -1,7 +1,7 @@
 export const BaseColumn = {
   useYn: 'use_yn',
   creator: 'creator',
-  createdAt: 'creatd_at',
+  createdAt: 'created_at',
   updator: 'updator',
   updatedAt: 'updated_at',
 } as const;
