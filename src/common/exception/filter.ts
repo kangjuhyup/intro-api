@@ -6,10 +6,10 @@ export class BaseExceptionFilter implements ExceptionFilter {
   private logger = new Logger(BaseExceptionFilter.name);
 
   catch(error: any, host: ArgumentsHost) {
+    this.logger.error(error);
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const status = error.status;
-    this.logger.error(error);
     if (status >= 400 && status < 500) {
       response.status(status).send({ result: false, error: error.response });
     } else {

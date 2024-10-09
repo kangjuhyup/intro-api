@@ -6,6 +6,8 @@ import { CommentModule } from './domain/comment/comment.module';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './database/database.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { ExceptionInterceptor } from './common/exception/interceptor';
 
 @Module({
   imports: [
@@ -23,6 +25,12 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     CommentModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: ExceptionInterceptor,
+    },
+    AppService,
+  ],
 })
 export class AppModule {}

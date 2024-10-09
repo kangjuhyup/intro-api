@@ -1,7 +1,8 @@
-import { BaseExceptionFilter, NestFactory } from '@nestjs/core';
+import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import 'dotenv/config';
 import { ValidationPipe } from '@nestjs/common';
+import { BaseExceptionFilter } from './common/exception/filter';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix('api');
