@@ -10,11 +10,29 @@ export class UserRepository {
     @InjectRepository(UserEntity) private readonly user: Repository<UserEntity>,
   ) {}
 
-  createUser(address: string, name: string, company?: string): UserEntity {
+  createUser(
+    address: string,
+    name: string,
+    fileId: number,
+    creator: string,
+    company?: string,
+  ): UserEntity {
     return this.user.create({
       address,
       name,
       company,
+      fileId,
+      creator,
+      updator: creator,
+    });
+  }
+
+  async selectUser(address: string): Promise<UserEntity> {
+    return await this.user.findOne({
+      where: {
+        useYn: YN.Y,
+        address,
+      },
     });
   }
 

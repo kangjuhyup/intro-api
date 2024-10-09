@@ -3,6 +3,7 @@ export const UserColumn = {
   address: 'address',
   name: 'name',
   company: 'company',
+  fileId: 'file_id',
 } as const;
 
 export type UserColumn = (typeof UserColumn)[keyof typeof UserColumn];

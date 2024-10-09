@@ -10,17 +10,22 @@ import { EmailHistoryEntity } from './email.history.entity';
 import { CommentEntity } from './comment.entity';
 import { UserColumn } from './column/user.column';
 import { BaseEntity } from './base.entity';
+import { FileEntity } from './file.entity';
+import { FileColumn } from './column/file.column';
 
-@Entity({ name : UserColumn.table })
+@Entity({ name: UserColumn.table })
 export class UserEntity extends BaseEntity {
-  @PrimaryColumn({ name : UserColumn.address })
+  @PrimaryColumn({ name: UserColumn.address })
   address: string;
 
-  @Column({ name : UserColumn.name })
+  @Column({ name: UserColumn.name })
   name: string;
 
-  @Column({ name : UserColumn.company, nullable: true })
+  @Column({ name: UserColumn.company, nullable: true })
   company?: string;
+
+  @Column({ name: UserColumn.fileId })
+  fileId: number;
 
   @OneToMany(() => EmailHistoryEntity, (emailHistory) => emailHistory.user, {
     nullable: true,
@@ -33,4 +38,8 @@ export class UserEntity extends BaseEntity {
   })
   @JoinColumn({ name: UserColumn.address })
   comment?: CommentEntity;
+
+  @OneToOne(() => FileEntity)
+  @JoinColumn({ name: FileColumn.fileId })
+  file: FileEntity;
 }

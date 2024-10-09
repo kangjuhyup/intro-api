@@ -18,9 +18,6 @@ export class CommentEntity extends BaseEntity {
   @Column({ name: EmailHistoryColumn.historyId })
   emailHistoryId: number;
 
-  @Column({ name: FileColumn.fileId })
-  fileId: number;
-
   @OneToOne(() => UserEntity)
   @JoinColumn({ name: CommentColumn.address })
   user: UserEntity;
@@ -28,8 +25,4 @@ export class CommentEntity extends BaseEntity {
   @OneToOne(() => EmailHistoryEntity)
   @JoinColumn({ name: EmailHistoryColumn.historyId })
   emailHistory: EmailHistoryEntity;
-
-  @OneToOne(() => FileEntity)
-  @JoinColumn({ name: FileColumn.fileId })
-  file: FileEntity;
 }

@@ -4,6 +4,8 @@ import { ConfigService } from '@nestjs/config';
 import { CommentModule } from '../comment/comment.module';
 import { MailController } from './mail.controller';
 import { MailService } from './mail.service';
+import { UserModule } from '../user/user.module';
+import { MailListener } from './mail.listener';
 @Module({
   imports: [
     MailerModule.forRootAsync({
@@ -24,9 +26,10 @@ import { MailService } from './mail.service';
       inject: [ConfigService],
     }),
     forwardRef(() => CommentModule),
+    UserModule,
   ],
   controllers: [MailController],
-  providers: [MailService],
+  providers: [MailService, MailListener],
   exports: [MailService],
 })
 export class MailModule {}

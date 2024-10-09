@@ -1,21 +1,21 @@
-import { Body, Controller, Get, Post, Query, Redirect } from '@nestjs/common';
+import { Controller, Get, Query, Redirect } from '@nestjs/common';
 import { MailService } from './mail.service';
-import { HttpResponse } from '../../dto/response.dto';
 import { VerifyMailRequest } from './dto/request/verify.request';
-import { VerifyMailResponse } from './dto/response/verify.response';
+import { ConfigService } from '@nestjs/config';
 
 @Controller('mail')
 export class MailController {
-  constructor(private readonly mailService: MailService) {}
+  constructor(
+    private readonly mailService: MailService,
+    private readonly config: ConfigService,
+  ) {}
 
   @Get('verify')
-  async verify(
-    @Query() dto: VerifyMailRequest,
-  ): Promise<HttpResponse<VerifyMailResponse>> {
-    const data = await this.mailService.verify(dto);
+  @Redirect()
+  async verify(@Query() dto: VerifyMailRequest) {
+    await this.mailService.verify(dto);
     return {
-      result: true,
-      data,
+      url: this.config.get<string>('PAGE_URL'),
     };
   }
 }

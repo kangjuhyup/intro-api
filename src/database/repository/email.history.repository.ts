@@ -11,10 +11,11 @@ export class EmailHistoryRepsitory {
     private readonly emailHistory: Repository<EmailHistoryEntity>,
   ) {}
 
-  createEmailHistory(address: string): EmailHistoryEntity {
+  createEmailHistory(address: string, creator: string): EmailHistoryEntity {
     return this.emailHistory.create({
       address,
-      creator: address,
+      creator,
+      updator: creator,
     });
   }
 

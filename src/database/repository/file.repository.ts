@@ -13,6 +13,7 @@ export class FileRepository {
     return this.file.create({
       path,
       creator,
+      updator: creator,
     });
   }
 

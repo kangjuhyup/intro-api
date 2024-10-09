@@ -1,10 +1,4 @@
-import {
-  BadRequestException,
-  forwardRef,
-  Inject,
-  Injectable,
-  Logger,
-} from '@nestjs/common';
+import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import { AddCommentRequest } from './dto/request/add.comment.request';
 import { MailService } from '../../domain/mail/mail.service';
 import { GetCommentsRequest } from './dto/request/get.comments.request';
@@ -22,26 +16,9 @@ export class CommentService {
       avartar: string;
       name: string;
       body: string;
+      company?: string;
     }
   >();
-
-  //TODO: 데이터베이스로 변경 필요
-  private comments: {
-    avartar: string;
-    name: string;
-    company: string;
-    body: string;
-    createdAt: Date;
-  }[] = [
-    {
-      avartar:
-        'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-2.png',
-      name: '강주협',
-      company: '더즌(주)',
-      body: '반가워요',
-      createdAt: new Date(),
-    },
-  ];
 
   constructor(
     @Inject(forwardRef(() => MailService))
@@ -58,7 +35,7 @@ export class CommentService {
       comments: (
         await this.commentRepisotry.selectCommentMany(limit, skip)
       ).map((comment) => ({
-        avartar: comment.file.path,
+        avartar: comment.user.file.path,
         name: comment.user.name,
         company: comment.user.company,
         body: comment.comment,
@@ -87,18 +64,23 @@ export class CommentService {
     return true;
   }
 
-  confirmComment(email: string, historyId: number): boolean {
-    this.logger.debug(`confirmComment email => ${email}`);
-    if (!this.unVeiriedComments.has(email)) return false;
-    const comment = this.unVeiriedComments.get(email);
-    if (comment.historyId !== historyId)
-      throw new BadRequestException('만료된 이메일 인증입니다.');
-    this.comments.push({
-      ...comment,
-      company: 'test',
-      createdAt: new Date(),
-    });
-    this.logger.debug(`push comments`);
+  getComment(email: string) {
+    return this.unVeiriedComments.get(email);
+  }
+
+  async confirmComment(
+    email: string,
+    comment: string,
+    emailHistoryId: number,
+  ): Promise<boolean> {
+    await this.commentRepisotry.insertComment(
+      this.commentRepisotry.createComment(
+        email,
+        comment,
+        emailHistoryId,
+        CommentService.name,
+      ),
+    );
     this.unVeiriedComments.delete(email);
     return true;
   }

@@ -6,6 +6,7 @@ export class IntroMigration1727785850201 implements MigrationInterface {
         CREATE TABLE tb_vm_comment (
             address varchar(100) NOT NULL,
             comment varchar(1000) NOT NULL,
+            vh_email_id int(11) NOT NULL,
             use_yn char(1) NOT NULL DEFAULT 'Y',
             creator varchar(255) NOT NULL,
             created_at timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
@@ -21,6 +22,7 @@ export class IntroMigration1727785850201 implements MigrationInterface {
             address varchar(100) NOT NULL,
             name varchar(50) NOT NULL,
             company varchar(50) DEFAULT NULL ,
+            file_id int(11) NOT NULL,
             use_yn char(1) NOT NULL DEFAULT 'Y',
             creator varchar(255) NOT NULL,
             created_at timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
@@ -48,7 +50,7 @@ export class IntroMigration1727785850201 implements MigrationInterface {
           DEFAULT CHARSET=utf8mb4 
           COLLATE=utf8mb4_unicode_ci;
         `;
-        const fileDDL = `
+    const fileDDL = `
         CREATE TABLE tb_vm_file (
             file_id int(11) NOT NULL AUTO_INCREMENT,
             path varchar(255) NOT NULL,
@@ -73,6 +75,6 @@ export class IntroMigration1727785850201 implements MigrationInterface {
     await queryRunner.query(`DROP TABLE tb_vm_comment`);
     await queryRunner.query(`DROP TABLE tb_vm_user`);
     await queryRunner.query(`DROP TABLE tb_vh_email`);
-    await qeuryRunner.query(`DROP TABLE tb_vm_file`);
+    await queryRunner.query(`DROP TABLE tb_vm_file`);
   }
 }

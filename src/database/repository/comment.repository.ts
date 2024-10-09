@@ -11,10 +11,18 @@ export class CommentRepository {
     private readonly comment: Repository<CommentEntity>,
   ) {}
 
-  createComment(address: string, comment: string): CommentEntity {
+  createComment(
+    address: string,
+    comment: string,
+    emailHistoryId: number,
+    creator: string,
+  ): CommentEntity {
     return this.comment.create({
       address,
       comment,
+      emailHistoryId,
+      creator,
+      updator: creator,
     });
   }
 
@@ -35,8 +43,9 @@ export class CommentRepository {
         useYn: YN.Y,
       },
       relations: {
-        user: true,
-        file: true,
+        user: {
+          file: true,
+        },
       },
       take: limit,
       skip: skip,
