@@ -79,5 +79,5 @@ jobs:
           docker pull ghcr.io/${{ github.repository }}/service:latest
           docker stop jhkang-intro-api || true
           docker rm jhkang-intro-api || true
-          docker run -d -p 3001:3001 --name jhkang-intro-api ghcr.io/${{ github.repository }}/service:latest
+          docker run -d -p 3001:3001 --network my-network --name jhkang-intro-api ghcr.io/${{ github.repository }}/service:latest
         EOF
