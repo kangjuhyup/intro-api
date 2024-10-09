@@ -47,6 +47,7 @@ jobs:
         echo "GMAIL_ACCOUNT=${{ secrets.GMAIL_ACCOUNT }}" >> .env
         echo "VERIFY_URL=${{ vars.VERIFY_URL }}" >> .env
         echo "GMAIL_PASSWORD=${{ secrets.GMAIL_PASSWORD }}" >> .env
+        echo "BLOG_URL=${{ vars.BLOG_URL }}" >> .env
 
     - name: docker create
       run : docker buildx create --use
