@@ -8,6 +8,7 @@ import { DatabaseModule } from './database/database.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ExceptionInterceptor } from './common/exception/interceptor';
+import { BlogModule } from './domain/blog/blog.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { ExceptionInterceptor } from './common/exception/interceptor';
     DatabaseModule,
     MailModule,
     CommentModule,
+    BlogModule,
   ],
   controllers: [AppController],
   providers: [
