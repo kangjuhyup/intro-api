@@ -50,6 +50,7 @@ export class CommentService {
     name,
     avartar,
     comment,
+    company,
   }: AddCommentRequest): Promise<boolean> {
     if (this.unVeiriedComments.has(email)) return false;
 
@@ -60,6 +61,7 @@ export class CommentService {
       name,
       avartar,
       body: comment,
+      company,
     });
     return true;
   }

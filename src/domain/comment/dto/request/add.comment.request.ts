@@ -11,4 +11,6 @@ export class AddCommentRequest {
   comment: string;
   @IsUrl()
   avartar: string;
+  @IsString()
+  company: string;
 }
