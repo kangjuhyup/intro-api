@@ -1,10 +1,19 @@
-import { Body, Controller, Get, Logger, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Logger,
+  Post,
+  Query,
+  Sse,
+  MessageEvent,
+} from '@nestjs/common';
 import { CommentService } from './comment.service';
 import { AddCommentRequest } from './dto/request/add.comment.request';
 import { GetCommentsRequest } from './dto/request/get.comments.request';
 import { HttpResponse } from 'src/dto/response.dto';
 import { GetCommentsResponse } from './dto/response/get.comments.response';
-
+import { interval, Observable, map, takeWhile } from 'rxjs';
 @Controller('comment')
 export class CommentController {
   private logger = new Logger(CommentController.name);
@@ -34,5 +43,16 @@ export class CommentController {
       result: true,
       data,
     };
+  }
+
+  @Sse('observe')
+  commentSession(@Query('email') email: string): Observable<MessageEvent> {
+    return interval(1000).pipe(
+      map(() => {
+        const commentExists = this.commentService.getComment(email);
+        return { data: { confirm: !commentExists } };
+      }),
+      takeWhile(({ data }) => !data.confirm),
+    );
   }
 }

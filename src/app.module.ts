@@ -19,7 +19,7 @@ import { BlogModule } from './domain/blog/blog.module';
       global: true,
       maxListeners: 10,
       verboseMemoryLeak: true,
-      ignoreErrors: false,
+      ignoreErrors: true,
     }),
     DatabaseModule,
     MailModule,
