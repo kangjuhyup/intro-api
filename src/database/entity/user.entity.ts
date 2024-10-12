@@ -15,7 +15,7 @@ import { FileColumn } from './column/file.column';
 
 @Entity({ name: UserColumn.table })
 export class UserEntity extends BaseEntity {
-  @PrimaryColumn({ name: UserColumn.address })
+  @PrimaryColumn({ name: UserColumn.address, type: 'varchar' })
   address: string;
 
   @Column({ name: UserColumn.name })
@@ -30,7 +30,6 @@ export class UserEntity extends BaseEntity {
   @OneToMany(() => EmailHistoryEntity, (emailHistory) => emailHistory.user, {
     nullable: true,
   })
-  @JoinColumn({ name: UserColumn.address })
   emailHistories?: EmailHistoryEntity[];
 
   @OneToOne(() => CommentEntity, (comment) => comment.user, {

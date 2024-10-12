@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EmailHistoryEntity } from '../entity/email.history.entity';
 import { InsertResult, Repository, UpdateResult } from 'typeorm';
-import { YN } from 'src/common/enum';
+import { YN } from '../../common/enum';
 
 @Injectable()
 export class EmailHistoryRepsitory {

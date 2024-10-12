@@ -6,7 +6,7 @@ import { BaseEntity } from './base.entity';
   name: FileColumn.table,
 })
 export class FileEntity extends BaseEntity {
-  @PrimaryGeneratedColumn({ name: FileColumn.fileId })
+  @PrimaryGeneratedColumn({ name: FileColumn.fileId, type: 'int' })
   fileId: number;
   @Column({ name: FileColumn.path })
   path: string;

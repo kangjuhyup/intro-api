@@ -15,6 +15,18 @@ services:
     networks:
       - jhkang-network 
 
+  redis:
+    image: redis:latest
+    container_name: my-redis
+    env_file:
+      - .env
+    command: ["redis-server", "--requirepass", "${REDIS_PWD}"]
+    ports:
+      - "6379:6379"
+    networks:
+      - jhkang-network
+ 
+
 networks:
   jhkang-network:
     driver: bridge

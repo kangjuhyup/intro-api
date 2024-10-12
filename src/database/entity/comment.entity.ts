@@ -4,12 +4,10 @@ import { BaseEntity } from './base.entity';
 import { CommentColumn } from './column/comment.column';
 import { EmailHistoryColumn } from './column/email.history.column';
 import { EmailHistoryEntity } from './email.history.entity';
-import { FileColumn } from './column/file.column';
-import { FileEntity } from './file.entity';
 
 @Entity({ name: CommentColumn.table })
 export class CommentEntity extends BaseEntity {
-  @PrimaryColumn({ name: CommentColumn.address })
+  @PrimaryColumn({ name: CommentColumn.address, type: 'varchar' })
   address: string;
 
   @Column({ name: CommentColumn.comment })

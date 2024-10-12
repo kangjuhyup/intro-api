@@ -1,29 +1,36 @@
-import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
+import {
+  ConflictException,
+  forwardRef,
+  Inject,
+  Injectable,
+  Logger,
+} from '@nestjs/common';
 import { AddCommentRequest } from './dto/request/add.comment.request';
 import { MailService } from '../../domain/mail/mail.service';
 import { GetCommentsRequest } from './dto/request/get.comments.request';
 import { GetCommentsResponse } from './dto/response/get.comments.response';
 import { ConfigService } from '@nestjs/config';
-import { CommentRepository } from 'src/database/repository/comment.repository';
+import { CommentRepository } from '../../database/repository/comment.repository';
+import { RedisClientService } from '../../redis/redis.service';
+
+interface RedisComment {
+  historyId: number;
+  name: string;
+  avartar: string;
+  body: string;
+  company: string;
+  verify: boolean;
+}
 
 @Injectable()
 export class CommentService {
   private logger = new Logger(ConfigService.name);
-  private unVeiriedComments = new Map<
-    string,
-    {
-      historyId: number;
-      avartar: string;
-      name: string;
-      body: string;
-      company?: string;
-    }
-  >();
 
   constructor(
     @Inject(forwardRef(() => MailService))
     private readonly mail: MailService,
     private readonly commentRepisotry: CommentRepository,
+    private readonly redis: RedisClientService,
   ) {}
 
   async getComments({
@@ -44,7 +51,6 @@ export class CommentService {
     };
   }
 
-  //TODO : Redis 로 저장소 변경 필요
   async addComment({
     email,
     name,
@@ -52,22 +58,32 @@ export class CommentService {
     comment,
     company,
   }: AddCommentRequest): Promise<boolean> {
-    if (this.unVeiriedComments.has(email)) return false;
+    const exist: RedisComment = await this.redis.get<RedisComment>(email);
+    if (exist) {
+      if (exist.verify)
+        throw new ConflictException('이미 댓글을 등록하였습니다.');
+      throw new ConflictException('댓글이 인증대기 중 입니다.');
+    }
 
     const { historyId } = await this.mail.send({ to: email });
+    await this.redis.set(
+      email,
+      {
+        historyId,
+        name,
+        avartar,
+        body: comment,
+        company,
+        verify: false,
+      },
+      600,
+    );
 
-    this.unVeiriedComments.set(email, {
-      historyId,
-      name,
-      avartar,
-      body: comment,
-      company,
-    });
     return true;
   }
 
-  getComment(email: string) {
-    return this.unVeiriedComments.get(email);
+  async getComment(email: string): Promise<RedisComment> {
+    return this.redis.get<RedisComment>(email);
   }
 
   async confirmComment(
@@ -83,7 +99,11 @@ export class CommentService {
         CommentService.name,
       ),
     );
-    this.unVeiriedComments.delete(email);
+    const existed = await this.redis.get<RedisComment>(email);
+    this.redis.set(email, {
+      ...existed,
+      verify: true,
+    });
     return true;
   }
 }

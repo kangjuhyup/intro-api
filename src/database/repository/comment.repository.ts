@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InsertResult, Repository, UpdateResult } from 'typeorm';
 import { CommentEntity } from '../entity/comment.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { YN } from 'src/common/enum';
+import { YN } from '../../common/enum';
 
 @Injectable()
 export class CommentRepository {

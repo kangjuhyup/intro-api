@@ -14,7 +14,10 @@ import { CommentEntity } from './comment.entity';
 
 @Entity({ name: EmailHistoryColumn.table })
 export class EmailHistoryEntity extends BaseEntity {
-  @PrimaryGeneratedColumn({ name: EmailHistoryColumn.historyId })
+  @PrimaryGeneratedColumn({
+    name: EmailHistoryColumn.historyId,
+    type: 'int',
+  })
   historyId: number;
 
   @Column({ name: EmailHistoryColumn.address })
