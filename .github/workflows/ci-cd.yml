@@ -48,7 +48,7 @@ jobs:
         echo "VERIFY_URL=${{ vars.VERIFY_URL }}" >> .env
         echo "GMAIL_PASSWORD=${{ secrets.GMAIL_PASSWORD }}" >> .env
         echo "BLOG_URL=${{ vars.BLOG_URL }}" >> .env
-        echo "REDIS_HOST=${{ secrets.REDIS_HOST }}"" >> .env
+        echo "REDIS_HOST=${{ secrets.REDIS_HOST }}" >> .env
         echo "REDIS_PORT=${{ secrets.REDIS_PORT }}" >> .env
         echo "REDIS_PWD=${{ secrets.REDIS_PWD }}" >> .env
     - name: docker create
