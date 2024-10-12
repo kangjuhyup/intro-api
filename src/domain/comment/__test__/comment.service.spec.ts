@@ -1,182 +1,143 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { MailService } from '../../mail/mail.service';
+import { CommentRepository } from '../../../database/repository/comment.repository';
+import { RedisClientService } from '../../../redis/redis.service';
+import { ConflictException } from '@nestjs/common';
 import { CommentService } from '../comment.service';
-import { AddCommentRequest } from '../dto/request/add.comment.request';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { MailModule } from '../../../domain/mail/mail.module';
-import { MailerService } from '@nestjs-modules/mailer';
+import { MailService } from '../../../domain/mail/mail.service';
+import { CommentEntity } from 'src/database/entity/comment.entity';
 
-describe('CommentService', () => {
-  let service: CommentService;
+describe('댓글 서비스 테스트', () => {
+  let commentService: CommentService;
   let mailService: MailService;
+  let commentRepository: CommentRepository;
+  let redisClientService: RedisClientService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [],
       providers: [
         CommentService,
         {
           provide: MailService,
           useValue: {
-            send: jest.fn(),
-            verify: jest.fn(),
+            send: jest.fn().mockResolvedValue({ historyId: 1 }),
           },
         },
         {
-          provide: MailerService,
+          provide: CommentRepository,
           useValue: {
-            sendMail: jest.fn(),
+            selectCommentMany: jest.fn(),
+            selectCommentCount: jest.fn(),
+            insertComment: jest.fn(),
+            createComment: jest.fn(),
           },
         },
         {
-          provide: ConfigService,
+          provide: RedisClientService,
           useValue: {
             get: jest.fn(),
+            set: jest.fn(),
           },
         },
       ],
-      exports: [],
     }).compile();
 
-    service = module.get<CommentService>(CommentService);
+    commentService = module.get<CommentService>(CommentService);
     mailService = module.get<MailService>(MailService);
+    commentRepository = module.get<CommentRepository>(CommentRepository);
+    redisClientService = module.get<RedisClientService>(RedisClientService);
   });
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
+  it('댓글을 성공적으로 추가한다', async () => {
+    const addCommentRequest = {
+      email: 'test@example.com',
+      name: '테스트 이름',
+      avartar: 'path/to/avatar',
+      comment: '테스트 댓글',
+      company: '테스트 회사',
+    };
+
+    jest.spyOn(redisClientService, 'get').mockResolvedValue(null);
+    const result = await commentService.addComment(addCommentRequest);
+
+    expect(mailService.send).toHaveBeenCalledWith({ to: 'test@example.com' });
+    expect(redisClientService.set).toHaveBeenCalled();
+    expect(result).toEqual(true);
   });
 
-  describe('getComments', () => {
-    it('페이지네이션 테스트', () => {
-      service['comments'] = [
-        {
-          avartar: 'avatar1',
-          name: '홍길동',
-          company: '더즌',
-          body: 'Comment 1',
-          createdAt: new Date(),
-        },
-        {
-          avartar: 'avatar2',
-          name: '임꺽정',
-          company: '캐리버스',
-          body: 'Comment 2',
-          createdAt: new Date(),
-        },
-        {
-          avartar: 'avatar3',
-          name: '박명수',
-          company: '크립토',
-          body: 'Comment 3',
-          createdAt: new Date(),
-        },
-      ];
+  it('이미 댓글이 존재하면 에러를 던진다', async () => {
+    const existingComment = {
+      historyId: 1,
+      name: '테스트 이름',
+      avartar: 'path/to/avatar',
+      body: '테스트 댓글',
+      company: '테스트 회사',
+      verify: false,
+    };
 
-      const result = service.getComments({ limit: 2, skip: 1 });
+    jest.spyOn(redisClientService, 'get').mockResolvedValue(existingComment);
 
-      expect(result.comments.length).toBe(2);
-      expect(result.count).toBe(3);
-    });
-
-    it('페이지네이션 skip 초과 테스트', () => {
-      service['comments'] = [
-        {
-          avartar: 'avatar1',
-          name: '홍길동',
-          company: '더즌',
-          body: 'Comment 1',
-          createdAt: new Date(),
-        },
-        {
-          avartar: 'avatar2',
-          name: '임꺽정',
-          company: '캐리버스',
-          body: 'Comment 2',
-          createdAt: new Date(),
-        },
-        {
-          avartar: 'avatar3',
-          name: '박명수',
-          company: '크립토',
-          body: 'Comment 3',
-          createdAt: new Date(),
-        },
-      ];
-
-      const result = service.getComments({ limit: 2, skip: 5 });
-
-      expect(result.comments.length).toBe(0);
-      expect(result.count).toBe(3);
-    });
+    await expect(
+      commentService.addComment({
+        email: 'test@example.com',
+        name: '테스트 이름',
+        avartar: 'path/to/avatar',
+        comment: '테스트 댓글',
+        company: '테스트 회사',
+      }),
+    ).rejects.toThrow(ConflictException);
   });
 
-  describe('addComment', () => {
-    it('코멘트 추가 테스트', async () => {
-      const addCommentRequest: AddCommentRequest = {
-        email: 'test@test.com',
-        name: '유재석',
-        avartar: 'avatar1',
-        comment: 'test',
-      };
+  it('댓글 목록을 성공적으로 가져온다', async () => {
+    const getCommentsRequest = { limit: 10, skip: 0 };
+    const commentList = [
+      {
+        address: 'test@test.com',
+        emailHistoryId: 1,
+        useYn: 'Y',
+        comment: 'Test comment',
+        createdAt: new Date(),
+        user: {
+          name: '',
+          file: {
+            path: '',
+          },
+        },
+        creator: '',
+        updator: '',
+        updatedAt: new Date(),
+      },
+    ] as CommentEntity[];
 
-      const result = await service.addComment(addCommentRequest);
+    jest
+      .spyOn(commentRepository, 'selectCommentMany')
+      .mockResolvedValue(commentList);
+    jest.spyOn(commentRepository, 'selectCommentCount').mockResolvedValue(1);
 
-      expect(result).toBe(true);
-      expect(service['unVeiriedComments'].has(addCommentRequest.email)).toBe(
-        true,
-      );
-      expect(mailService.send).toHaveBeenCalledWith({ to: 'test@test.com' });
-    });
+    const result = await commentService.getComments(getCommentsRequest);
 
-    it('이미 존재하는 이메일 코멘트 추가 테스트', async () => {
-      const addCommentRequest: AddCommentRequest = {
-        email: 'test@test.com',
-        name: '유재석',
-        avartar: 'avatar1',
-        comment: 'test',
-      };
-
-      service['unVeiriedComments'].set(addCommentRequest.email, {
-        name: '박명수',
-        avartar: 'avatar1',
-        body: 'test',
-      });
-
-      const result = await service.addComment(addCommentRequest);
-
-      expect(result).toBe(false);
-      expect(mailService.send).not.toHaveBeenCalled();
-    });
+    expect(result.count).toEqual(1);
+    expect(result.comments.length).toEqual(1);
   });
 
-  describe('confirmComment', () => {
-    it('미인증 코멘트 인증', () => {
-      const email = 'test@test.com';
-      service['unVeiriedComments'].set(email, {
-        name: '유재석',
-        avartar: 'avatar1',
-        body: 'test',
-      });
+  it('댓글을 성공적으로 확인한다', async () => {
+    const email = 'test@example.com';
+    const redisComment = {
+      historyId: 1,
+      name: '테스트 이름',
+      avartar: 'path/to/avatar',
+      body: '테스트 댓글',
+      company: '테스트 회사',
+      verify: false,
+    };
 
-      const result = service.confirmComment(email);
+    jest.spyOn(redisClientService, 'get').mockResolvedValue(redisComment);
 
-      expect(result).toBe(true);
-      expect(service['comments'].length).toBe(1);
-      expect(service['unVeiriedComments'].has(email)).toBe(false);
-      expect(service.getComments({ limit: 10, skip: 0 })).toEqual({
-        count: 1,
-        comments: [
-          expect.objectContaining({
-            name: '유재석',
-          }),
-        ],
-      });
-    });
+    const result = await commentService.confirmComment(email, '테스트 댓글', 1);
 
-    it('미인증 코멘트가 없을경우 테스트', () => {
-      const result = service.confirmComment('noperson@test.com');
-
-      expect(result).toBe(false);
+    expect(result).toEqual(true);
+    expect(redisClientService.set).toHaveBeenCalledWith(email, {
+      ...redisComment,
+      verify: true,
     });
   });
 });
